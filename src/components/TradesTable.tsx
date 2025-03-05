@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Trade } from "@/lib/data";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -145,13 +144,15 @@ const TradesTable = ({ trades }: TradesTableProps) => {
                   <TableCell className="hidden md:table-cell">{trade.strategy}</TableCell>
                   <TableCell>
                     <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      trade.position === "long" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                      trade.position === "long" 
+                        ? "bg-secondary/20 text-secondary-foreground" 
+                        : "bg-primary/20 text-primary-foreground"
                     }`}>
                       {trade.position === "long" ? "Long" : "Short"}
                     </span>
                   </TableCell>
                   <TableCell className={`text-right font-medium ${
-                    trade.pnl >= 0 ? "text-green-600" : "text-red-600"
+                    trade.pnl >= 0 ? "text-secondary" : "text-destructive"
                   }`}>
                     ${trade.pnl.toFixed(2)}
                   </TableCell>

@@ -1,92 +1,98 @@
+import { Link, useNavigate } from "react-router-dom";
+import { Button } from "./ui/button";
+import { ThemeToggle } from "./ThemeToggle";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
+import { authService } from "@/lib/services/authService";
+import { useToast } from "./ui/use-toast";
 
-import { useState } from 'react';
-import { Button } from "@/components/ui/button";
-import { Gauge, BarChart2, BookOpen, Settings, Menu, X } from "lucide-react";
-import { Link } from 'react-router-dom';
+export default function NavBar() {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+  const user = authService.getUser();
 
-const NavBar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const toggleMobileMenu = () => {
-    setIsMobileMenuOpen(!isMobileMenuOpen);
+  const handleSignOut = async () => {
+    await authService.signOut();
+    toast({
+      title: "Success",
+      description: "Successfully signed out",
+    });
+    navigate("/signin");
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-background/80 backdrop-blur-md z-50 border-b border-border">
-      <div className="container mx-auto px-4 py-3 flex items-center justify-between">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className="font-semibold text-xl tracking-tight text-primary">TradeLogAI</span>
+    <nav className="fixed top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div className="container flex h-14 items-center">
+        <Link to="/" className="mr-6 flex items-center space-x-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="h-6 w-6"
+          >
+            <path d="M15 6v12a3 3 0 1 0 3-3H6a3 3 0 1 0 3 3V6a3 3 0 1 0-3 3h12a3 3 0 1 0-3-3" />
+          </svg>
+          <span className="font-bold">TradeWisdom</span>
         </Link>
-
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-1">
-          <NavItem to="/dashboard" icon={<Gauge size={18} />} label="Dashboard" />
-          <NavItem to="/journal" icon={<BookOpen size={18} />} label="Journal" />
-          <NavItem to="/analytics" icon={<BarChart2 size={18} />} label="Analytics" />
-          <NavItem to="/settings" icon={<Settings size={18} />} label="Settings" />
-          <Button className="ml-4">Connect Broker</Button>
-        </nav>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden p-2 rounded-md focus:outline-none"
-          onClick={toggleMobileMenu}
-        >
-          {isMobileMenuOpen ? (
-            <X size={24} className="text-foreground" />
-          ) : (
-            <Menu size={24} className="text-foreground" />
-          )}
-        </button>
-      </div>
-
-      {/* Mobile Navigation */}
-      {isMobileMenuOpen && (
-        <div className="md:hidden absolute top-full left-0 right-0 bg-background border-b border-border animate-slide-in">
-          <div className="container mx-auto px-4 py-2 space-y-1">
-            <MobileNavItem to="/dashboard" icon={<Gauge size={18} />} label="Dashboard" onClick={toggleMobileMenu} />
-            <MobileNavItem to="/journal" icon={<BookOpen size={18} />} label="Journal" onClick={toggleMobileMenu} />
-            <MobileNavItem to="/analytics" icon={<BarChart2 size={18} />} label="Analytics" onClick={toggleMobileMenu} />
-            <MobileNavItem to="/settings" icon={<Settings size={18} />} label="Settings" onClick={toggleMobileMenu} />
-            <div className="pt-2 pb-3">
-              <Button className="w-full">Connect Broker</Button>
-            </div>
-          </div>
+        <div className="flex items-center space-x-6 text-sm font-medium">
+          <Link
+            to="/dashboard"
+            className="transition-colors hover:text-foreground/80 text-foreground"
+          >
+            Dashboard
+          </Link>
+          <Link
+            to="/journal"
+            className="transition-colors hover:text-foreground/80 text-foreground"
+          >
+            Journal
+          </Link>
+          <Link
+            to="/analytics"
+            className="transition-colors hover:text-foreground/80 text-foreground"
+          >
+            Analytics
+          </Link>
+          <Link
+            to="/settings"
+            className="transition-colors hover:text-foreground/80 text-foreground"
+          >
+            Settings
+          </Link>
         </div>
-      )}
-    </header>
+        <div className="ml-auto flex items-center space-x-4">
+          <ThemeToggle />
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                <div className="flex h-full w-full items-center justify-center rounded-full bg-muted">
+                  {user?.name?.[0] || user?.email?.[0] || "U"}
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => navigate("/settings")}>
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleSignOut}>
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </div>
+    </nav>
   );
-};
-
-interface NavItemProps {
-  to: string;
-  icon: React.ReactNode;
-  label: string;
 }
-
-const NavItem = ({ to, icon, label }: NavItemProps) => (
-  <Link
-    to={to}
-    className="px-3 py-2 rounded-md text-sm font-medium text-foreground hover:bg-primary/10 flex items-center space-x-1 transition-colors"
-  >
-    {icon}
-    <span>{label}</span>
-  </Link>
-);
-
-interface MobileNavItemProps extends NavItemProps {
-  onClick: () => void;
-}
-
-const MobileNavItem = ({ to, icon, label, onClick }: MobileNavItemProps) => (
-  <Link
-    to={to}
-    className="block px-3 py-2 rounded-md text-base font-medium text-foreground hover:bg-primary/10 flex items-center space-x-2 transition-colors"
-    onClick={onClick}
-  >
-    {icon}
-    <span>{label}</span>
-  </Link>
-);
-
-export default NavBar;

@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Performance } from "@/lib/data";
 import { TrendingUp, TrendingDown, DollarSign, BarChart2 } from "lucide-react";
@@ -14,7 +13,7 @@ const PerformanceOverview = ({ performance }: PerformanceOverviewProps) => {
         title="Win Rate"
         value={`${performance.winRate}%`}
         description={`${performance.profitableTrades}/${performance.totalTrades} trades`}
-        icon={<TrendingUp className="h-6 w-6 text-green-500" />}
+        icon={<TrendingUp className="h-6 w-6 text-secondary" />}
         trend={performance.winRate > 50 ? "positive" : "negative"}
       />
       <MetricCard
@@ -28,7 +27,7 @@ const PerformanceOverview = ({ performance }: PerformanceOverviewProps) => {
         title="Avg Win"
         value={`$${performance.averageWin.toFixed(2)}`}
         description={`vs $${performance.averageLoss.toFixed(2)} avg loss`}
-        icon={<DollarSign className="h-6 w-6 text-green-500" />}
+        icon={<DollarSign className="h-6 w-6 text-secondary" />}
         trend={performance.averageWin > performance.averageLoss ? "positive" : "negative"}
       />
       <MetricCard
@@ -66,7 +65,7 @@ const MetricCard = ({ title, value, description, icon, trend }: MetricCardProps)
         </p>
         {trend !== "neutral" && (
           <div className={`mt-2 inline-flex items-center text-xs ${
-            trend === "positive" ? "text-green-500" : "text-destructive"
+            trend === "positive" ? "text-secondary" : "text-destructive"
           }`}>
             {trend === "positive" ? (
               <>
