@@ -1,7 +1,6 @@
-import { mockPerformance, mockTrades, mockStrategies, mockAIInsights } from '@/lib/data';
+import { mockPerformance, mockTrades, mockStrategies } from '@/lib/data';
 import PerformanceOverview from '@/components/PerformanceOverview';
 import TradesTable from '@/components/TradesTable';
-import AIInsights from '@/components/AIInsights';
 import StrategyPerformance from '@/components/StrategyPerformance';
 import TradeChart from '@/components/TradeChart';
 import { TradingCalendar } from '@/components/TradingCalendar';
@@ -43,9 +42,6 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
         <div className="lg:col-span-2">
           <TradeChart trades={trades} />
-        </div>
-        <div>
-          <AIInsights insights={mockAIInsights} />
         </div>
       </div>
 

@@ -7,6 +7,10 @@ export interface CSVMapping {
   type: string;
   side: string;
   quantity: string;
+  entryDate: string;
+  exitDate: string;
+  entryPrice: string;
+  exitPrice: string;
   price: string;
   fees?: string;
   pnl?: string;
@@ -51,34 +55,24 @@ export class CSVImportService {
   private mapRowToTrade(row: any): Trade {
     const trade: Trade = {
       id: crypto.randomUUID(),
-      date: new Date(row[this.mapping.date]),
       symbol: row[this.mapping.symbol],
-      type: this.normalizeTradeType(row[this.mapping.type]),
-      side: this.normalizeTradeSide(row[this.mapping.side]),
-      quantity: parseFloat(row[this.mapping.quantity]),
-      price: parseFloat(row[this.mapping.price]),
-      fees: this.mapping.fees ? parseFloat(row[this.mapping.fees]) : 0,
+      position: row[this.mapping.side].toLowerCase(),
+      date: new Date(row[this.mapping.date]),
+      entryDate: new Date(row[this.mapping.date]),
+      exitDate: new Date(row[this.mapping.date]),
+      entryPrice: parseFloat(row[this.mapping.price] || row[this.mapping.entryPrice] || '0'),
+      exitPrice: parseFloat(row[this.mapping.price] || row[this.mapping.exitPrice] || '0'),
+      quantity: parseInt(row[this.mapping.quantity]),
       pnl: this.mapping.pnl ? parseFloat(row[this.mapping.pnl]) : 0,
+      strategy: row[this.mapping.strategy] || 'Unknown',
+      broker: row[this.mapping.broker] || 'Unknown',
+      notes: row[this.mapping.notes] || '',
+      tags: row[this.mapping.tags] ? row[this.mapping.tags].split(',').map(tag => tag.trim()) : []
     };
 
     // Add optional fields if they exist in the mapping
-    if (this.mapping.strategy) {
-      trade.strategy = row[this.mapping.strategy];
-    }
-
-    if (this.mapping.notes) {
-      trade.notes = row[this.mapping.notes];
-    }
-
-    if (this.mapping.tags) {
-      trade.tags = row[this.mapping.tags]
-        .split(',')
-        .map((tag: string) => tag.trim())
-        .filter((tag: string) => tag.length > 0);
-    }
-
-    if (this.mapping.broker) {
-      trade.broker = row[this.mapping.broker];
+    if (this.mapping.fees) {
+      trade.fees = parseFloat(row[this.mapping.fees]);
     }
 
     if (this.mapping.commission) {

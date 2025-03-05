@@ -70,23 +70,27 @@ export function ImportTrades({ onImportComplete }: ImportTradesProps) {
 
     setIsLoading(true);
     try {
-      const mapping: CSVMapping = {
-        date: "Date",
-        symbol: "Symbol",
-        type: "Type",
-        side: "Side",
-        quantity: "Quantity",
-        price: "Price",
-        fees: "Fees",
-        pnl: "P&L",
-        strategy: "Strategy",
-        notes: "Notes",
-        tags: "Tags",
-        broker: "Broker",
-        commission: "Commission",
+      const defaultMapping: CSVMapping = {
+        date: 'date',
+        symbol: 'symbol',
+        type: 'type',
+        side: 'side',
+        quantity: 'quantity',
+        price: 'price',
+        entryDate: 'entryDate',
+        exitDate: 'exitDate',
+        entryPrice: 'entryPrice',
+        exitPrice: 'exitPrice',
+        fees: 'fees',
+        pnl: 'pnl',
+        strategy: 'strategy',
+        notes: 'notes',
+        tags: 'tags',
+        broker: 'broker',
+        commission: 'commission'
       };
 
-      const csvService = new CSVImportService(mapping);
+      const csvService = new CSVImportService(defaultMapping);
       const trades = await csvService.importFile(file);
 
       onImportComplete(trades);

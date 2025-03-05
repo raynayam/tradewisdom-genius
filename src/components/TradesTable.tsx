@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Trade } from "@/lib/data";
+import { Trade } from "@/types/trade";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,10 +31,10 @@ const TradesTable = ({ trades }: TradesTableProps) => {
   );
 
   const sortedTrades = [...filteredTrades].sort((a, b) => {
-    if (sortBy === "exitDate" || sortBy === "entryDate") {
-      return sortDirection === "asc"
-        ? new Date(a[sortBy]).getTime() - new Date(b[sortBy]).getTime()
-        : new Date(b[sortBy]).getTime() - new Date(a[sortBy]).getTime();
+    if (sortBy === "exitDate" || sortBy === "entryDate" || sortBy === "date") {
+      const aDate = a[sortBy] as Date;
+      const bDate = b[sortBy] as Date;
+      return sortDirection === "asc" ? aDate.getTime() - bDate.getTime() : bDate.getTime() - aDate.getTime();
     }
     
     if (typeof a[sortBy] === "number" && typeof b[sortBy] === "number") {
@@ -48,8 +48,7 @@ const TradesTable = ({ trades }: TradesTableProps) => {
       : String(b[sortBy]).localeCompare(String(a[sortBy]));
   });
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'short',
       day: '2-digit',

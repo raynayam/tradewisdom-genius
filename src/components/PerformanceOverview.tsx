@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Performance } from "@/lib/data";
+import { Performance } from "@/types/trade";
 import { TrendingUp, TrendingDown, DollarSign, BarChart2 } from "lucide-react";
 
 interface PerformanceOverviewProps {

@@ -1,5 +1,4 @@
-
-import { Strategy } from "@/lib/data";
+import { Strategy } from "@/types/trade";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Lightbulb } from "lucide-react";
