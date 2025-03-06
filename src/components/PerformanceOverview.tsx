@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Performance } from "@/types/trade";
 import { TrendingUp, TrendingDown, DollarSign, BarChart2 } from "lucide-react";
+import { formatCurrency } from "@/lib/utils";
 
 interface PerformanceOverviewProps {
   performance: Performance;
@@ -8,35 +9,55 @@ interface PerformanceOverviewProps {
 
 const PerformanceOverview = ({ performance }: PerformanceOverviewProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 animate-fade-in">
-      <MetricCard
-        title="Win Rate"
-        value={`${performance.winRate}%`}
-        description={`${performance.profitableTrades}/${performance.totalTrades} trades`}
-        icon={<TrendingUp className="h-6 w-6 text-secondary" />}
-        trend={performance.winRate > 50 ? "positive" : "negative"}
-      />
-      <MetricCard
-        title="Profit Factor"
-        value={performance.profitFactor.toFixed(2)}
-        description={`Gross profit / gross loss`}
-        icon={<BarChart2 className="h-6 w-6 text-primary" />}
-        trend={performance.profitFactor > 1 ? "positive" : "negative"}
-      />
-      <MetricCard
-        title="Avg Win"
-        value={`$${performance.averageWin.toFixed(2)}`}
-        description={`vs $${performance.averageLoss.toFixed(2)} avg loss`}
-        icon={<DollarSign className="h-6 w-6 text-secondary" />}
-        trend={performance.averageWin > performance.averageLoss ? "positive" : "negative"}
-      />
-      <MetricCard
-        title="Largest Loss"
-        value={`$${Math.abs(performance.largestLoss).toFixed(2)}`}
-        description={`vs $${performance.largestWin.toFixed(2)} largest win`}
-        icon={<TrendingDown className="h-6 w-6 text-destructive" />}
-        trend="neutral"
-      />
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-bold">Win Rate</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{performance.winRate.toFixed(1)}%</div>
+          <p className="text-xs text-muted-foreground">
+            {performance.profitableTrades} of {performance.totalTrades} trades
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-bold">Net P&L</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className={`text-2xl font-bold ${performance.netPnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {formatCurrency(performance.netPnl)}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            After fees & commissions
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-bold">Total Fees</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-muted-foreground">
+            {formatCurrency(performance.totalFees)}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Avg {formatCurrency(performance.totalFees / performance.totalTrades)} per trade
+          </p>
+        </CardContent>
+      </Card>
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-bold">Profit Factor</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{performance.profitFactor.toFixed(2)}</div>
+          <p className="text-xs text-muted-foreground">
+            Gross profit / Gross loss
+          </p>
+        </CardContent>
+      </Card>
     </div>
   );
 };

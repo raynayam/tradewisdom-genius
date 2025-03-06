@@ -47,7 +47,9 @@ export const mockPerformance: Performance = {
   averageWin: 550,
   averageLoss: 220,
   largestWin: 1200,
-  largestLoss: -450
+  largestLoss: -450,
+  netPnl: 4850,
+  totalFees: 150
 };
 
 export const mockStrategies: Strategy[] = [

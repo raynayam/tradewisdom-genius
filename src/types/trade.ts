@@ -36,6 +36,8 @@ export interface Performance {
   averageLoss: number;
   largestWin: number;
   largestLoss: number;
+  netPnl: number;      // Added for net profit/loss after fees
+  totalFees: number;   // Added for total fees and commissions
 }
 
 export interface Strategy {

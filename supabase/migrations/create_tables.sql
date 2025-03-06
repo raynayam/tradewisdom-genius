@@ -1,4 +1,11 @@
--- Create users table
+-- Drop existing policies if they exist
+drop policy if exists "Users can read their own data" on public.users;
+drop policy if exists "Users can read their own trades" on public.trades;
+drop policy if exists "Users can insert their own trades" on public.trades;
+drop policy if exists "Users can update their own trades" on public.trades;
+drop policy if exists "Users can delete their own trades" on public.trades;
+
+-- Create users table if it doesn't exist
 create table if not exists public.users (
     id uuid default auth.uid() primary key,
     email text not null unique,
@@ -15,7 +22,7 @@ create policy "Users can read their own data"
     for select
     using (auth.uid() = id);
 
--- Create trades table
+-- Create trades table if it doesn't exist
 create table if not exists public.trades (
     id uuid default gen_random_uuid() primary key,
     user_id uuid references public.users(id) not null,
@@ -65,11 +72,13 @@ end;
 $$ language plpgsql security definer;
 
 -- Create triggers for updated_at
+drop trigger if exists handle_users_updated_at on public.users;
 create trigger handle_users_updated_at
     before update on public.users
     for each row
     execute procedure public.handle_updated_at();
 
+drop trigger if exists handle_trades_updated_at on public.trades;
 create trigger handle_trades_updated_at
     before update on public.trades
     for each row

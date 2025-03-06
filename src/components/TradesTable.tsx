@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ArrowUpDown, Search, FileText, ChevronRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { formatCurrency, formatDate } from "@/lib/utils";
 
 interface TradesTableProps {
   trades: Trade[];
@@ -48,16 +49,6 @@ const TradesTable = ({ trades }: TradesTableProps) => {
       : String(b[sortBy]).localeCompare(String(a[sortBy]));
   });
 
-  const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat('en-US', {
-      month: 'short',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true
-    }).format(date);
-  };
-
   return (
     <div className="space-y-4 animate-fade-in">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -84,48 +75,17 @@ const TradesTable = ({ trades }: TradesTableProps) => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[100px]">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("symbol")}
-                  className="flex items-center gap-1 p-0 h-auto font-medium"
-                >
-                  Symbol
-                  <ArrowUpDown className="h-3 w-3" />
-                </Button>
-              </TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("exitDate")}
-                  className="flex items-center gap-1 p-0 h-auto font-medium"
-                >
-                  Date
-                  <ArrowUpDown className="h-3 w-3" />
-                </Button>
-              </TableHead>
-              <TableHead className="hidden md:table-cell">Strategy</TableHead>
-              <TableHead>
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("position")}
-                  className="flex items-center gap-1 p-0 h-auto font-medium"
-                >
-                  Side
-                  <ArrowUpDown className="h-3 w-3" />
-                </Button>
-              </TableHead>
-              <TableHead className="text-right">
-                <Button 
-                  variant="ghost" 
-                  onClick={() => handleSort("pnl")}
-                  className="flex items-center gap-1 p-0 h-auto font-medium ml-auto"
-                >
-                  P&L
-                  <ArrowUpDown className="h-3 w-3" />
-                </Button>
-              </TableHead>
-              <TableHead className="w-[50px]"></TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Symbol</TableHead>
+              <TableHead>Position</TableHead>
+              <TableHead>Entry Price</TableHead>
+              <TableHead>Exit Price</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead className="text-right">Fees</TableHead>
+              <TableHead className="text-right">Commission</TableHead>
+              <TableHead className="text-right">P&L</TableHead>
+              <TableHead>Strategy</TableHead>
+              <TableHead>Broker</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -138,26 +98,25 @@ const TradesTable = ({ trades }: TradesTableProps) => {
             ) : (
               sortedTrades.map((trade) => (
                 <TableRow key={trade.id} className="cursor-pointer hover:bg-muted/50" onClick={() => navigate(`/trade/${trade.id}`)}>
-                  <TableCell className="font-medium">{trade.symbol}</TableCell>
                   <TableCell>{formatDate(trade.exitDate)}</TableCell>
-                  <TableCell className="hidden md:table-cell">{trade.strategy}</TableCell>
-                  <TableCell>
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      trade.position === "long" 
-                        ? "bg-secondary/20 text-secondary-foreground" 
-                        : "bg-primary/20 text-primary-foreground"
-                    }`}>
-                      {trade.position === "long" ? "Long" : "Short"}
-                    </span>
+                  <TableCell className="font-medium">{trade.symbol}</TableCell>
+                  <TableCell className={trade.position === 'long' ? 'text-green-600' : 'text-red-600'}>
+                    {trade.position.toUpperCase()}
                   </TableCell>
-                  <TableCell className={`text-right font-medium ${
-                    trade.pnl >= 0 ? "text-secondary" : "text-destructive"
-                  }`}>
-                    ${trade.pnl.toFixed(2)}
+                  <TableCell>{formatCurrency(trade.entryPrice)}</TableCell>
+                  <TableCell>{formatCurrency(trade.exitPrice)}</TableCell>
+                  <TableCell>{trade.quantity}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">
+                    {trade.fees ? `-${formatCurrency(trade.fees)}` : '-'}
                   </TableCell>
-                  <TableCell>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                  <TableCell className="text-right text-muted-foreground">
+                    {trade.commission ? `-${formatCurrency(trade.commission)}` : '-'}
                   </TableCell>
+                  <TableCell className={`text-right ${trade.pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    {formatCurrency(trade.pnl)}
+                  </TableCell>
+                  <TableCell>{trade.strategy}</TableCell>
+                  <TableCell>{trade.broker}</TableCell>
                 </TableRow>
               ))
             )}
